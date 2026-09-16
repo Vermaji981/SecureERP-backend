@@ -42,9 +42,9 @@ const seedData = async () => {
     console.log('Seeding Users & Roles...');
     // Seed Admin User
     const adminUser = await User.create({
-      name: 'System Admin',
-      email: 'admin@secureerp.com',
-      password: 'Admin@12345',
+      name: 'Happy',
+      email: 'hv0563163@gmail.com',
+      password: 'Happy@2003',
       role: 'admin',
       status: 'active',
       phone: '+91 9876543210'
@@ -350,7 +350,7 @@ const seedData = async () => {
     console.log('======================================================');
     console.log(' DEFAULT LOGIN CREDENTIALS FOR TESTING:');
     console.log('------------------------------------------------------');
-    console.log(' ADMIN     : admin@secureerp.com      / Admin@12345');
+    console.log(' ADMIN     : hv0563163@gmail.com   / Happy@2003');
     console.log(' MANAGER   : manager@secureerp.com    / Manager@12345');
     console.log(' HR        : hr@secureerp.com         / Hr@123456789');
     console.log(' ACCOUNTANT: accountant@secureerp.com / Accountant@123');
