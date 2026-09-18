@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/secure_erp';
+    const mongoUri = process.env.MONGO_URI || 'mongodb+srv://hv0563163_db_user:UgeGfg2uMhqnnCNh@datamanagement.uvvgy90.mongodb.net';
     
     // Attempt standard connection
     const conn = await mongoose.connect(mongoUri, {
