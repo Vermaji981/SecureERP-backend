@@ -8,10 +8,18 @@ const rateLimit = require("express-rate-limit");
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/errorMiddleware");
 
-// Load environment variables
+// ===============================
+// Load Environment Variables
+// ===============================
 dotenv.config();
 
 const app = express();
+
+// ===============================
+// Vercel / Proxy Configuration
+// ===============================
+// Required because Vercel sends X-Forwarded-For header
+app.set("trust proxy", 1);
 
 // ===============================
 // Database Connection
@@ -35,7 +43,8 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests without origin (Postman, server-to-server, etc.)
+      // Allow requests without origin
+      // Example: Postman / server-to-server
       if (!origin) {
         return callback(null, true);
       }
@@ -44,10 +53,9 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(
-        new Error("Not allowed by CORS")
-      );
+      return callback(new Error("Not allowed by CORS"));
     },
+
     credentials: true,
   })
 );
@@ -71,13 +79,18 @@ if (process.env.NODE_ENV === "development") {
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
+
   message: {
     success: false,
     message:
       "Too many authentication requests from this IP, please try again after 15 minutes.",
   },
+
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
+// Apply rate limiter to authentication routes
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 
@@ -104,93 +117,89 @@ app.get("/api/health", (req, res) => {
 });
 
 // ===============================
-// API ROUTES
+// AUTH ROUTES
 // ===============================
+app.use("/api/auth", require("./routes/authRoutes"));
 
-app.use(
-  "/api/auth",
-  require("./routes/authRoutes")
-);
+// ===============================
+// EMPLOYEE ROUTES
+// ===============================
+app.use("/api/employees", require("./routes/employeeRoutes"));
 
-app.use(
-  "/api/employees",
-  require("./routes/employeeRoutes")
-);
+// ===============================
+// DEPARTMENT ROUTES
+// ===============================
+app.use("/api/departments", require("./routes/departmentRoutes"));
 
-app.use(
-  "/api/departments",
-  require("./routes/departmentRoutes")
-);
+// ===============================
+// PRODUCT ROUTES
+// ===============================
+app.use("/api/products", require("./routes/productRoutes"));
 
-app.use(
-  "/api/products",
-  require("./routes/productRoutes")
-);
+// ===============================
+// INVENTORY ROUTES
+// ===============================
+app.use("/api/inventory", require("./routes/inventoryRoutes"));
 
-app.use(
-  "/api/inventory",
-  require("./routes/inventoryRoutes")
-);
+// ===============================
+// SUPPLIER ROUTES
+// ===============================
+app.use("/api/suppliers", require("./routes/supplierRoutes"));
 
-app.use(
-  "/api/suppliers",
-  require("./routes/supplierRoutes")
-);
+// ===============================
+// CUSTOMER ROUTES
+// ===============================
+app.use("/api/customers", require("./routes/customerRoutes"));
 
-app.use(
-  "/api/customers",
-  require("./routes/customerRoutes")
-);
+// ===============================
+// PURCHASE ROUTES
+// ===============================
+app.use("/api/purchases", require("./routes/purchaseRoutes"));
 
-app.use(
-  "/api/purchases",
-  require("./routes/purchaseRoutes")
-);
+// ===============================
+// SALES ROUTES
+// ===============================
+app.use("/api/sales", require("./routes/salesRoutes"));
 
-app.use(
-  "/api/sales",
-  require("./routes/salesRoutes")
-);
+// ===============================
+// INVOICE ROUTES
+// ===============================
+app.use("/api/invoices", require("./routes/invoiceRoutes"));
 
-app.use(
-  "/api/invoices",
-  require("./routes/invoiceRoutes")
-);
+// ===============================
+// ATTENDANCE ROUTES
+// ===============================
+app.use("/api/attendance", require("./routes/attendanceRoutes"));
 
-app.use(
-  "/api/attendance",
-  require("./routes/attendanceRoutes")
-);
+// ===============================
+// LEAVE ROUTES
+// ===============================
+app.use("/api/leaves", require("./routes/leaveRoutes"));
 
-app.use(
-  "/api/leaves",
-  require("./routes/leaveRoutes")
-);
+// ===============================
+// EXPENSE ROUTES
+// ===============================
+app.use("/api/expenses", require("./routes/expenseRoutes"));
 
-app.use(
-  "/api/expenses",
-  require("./routes/expenseRoutes")
-);
+// ===============================
+// PAYROLL ROUTES
+// ===============================
+app.use("/api/payroll", require("./routes/payrollRoutes"));
 
-app.use(
-  "/api/payroll",
-  require("./routes/payrollRoutes")
-);
+// ===============================
+// REPORT ROUTES
+// ===============================
+app.use("/api/reports", require("./routes/reportRoutes"));
 
-app.use(
-  "/api/reports",
-  require("./routes/reportRoutes")
-);
+// ===============================
+// AUDIT LOG ROUTES
+// ===============================
+app.use("/api/audit-logs", require("./routes/auditLogRoutes"));
 
-app.use(
-  "/api/audit-logs",
-  require("./routes/auditLogRoutes")
-);
-
-app.use(
-  "/api/notifications",
-  require("./routes/notificationRoutes")
-);
+// ===============================
+// NOTIFICATION ROUTES
+// ===============================
+app.use("/api/notifications", require("./routes/notificationRoutes"));
 
 // ===============================
 // 404 HANDLER
@@ -226,10 +235,10 @@ if (require.main === module) {
 // UNHANDLED REJECTION
 // ===============================
 process.on("unhandledRejection", (err) => {
-  console.error(
-    `Unhandled Rejection Error: ${err.message}`
-  );
+  console.error(`Unhandled Rejection Error: ${err.message}`);
 });
 
-// Export app for Vercel
+// ===============================
+// Export App for Vercel
+// ===============================
 module.exports = app;
